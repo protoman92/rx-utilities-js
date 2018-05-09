@@ -1,8 +1,8 @@
 {
   "name": "rx-utilities-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utilities for rxjs.",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "typings": "./dist/src/index.d.ts",
   "scripts": {

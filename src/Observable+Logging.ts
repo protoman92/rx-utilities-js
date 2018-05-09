@@ -10,7 +10,7 @@ import { doOnNext, doOnError } from './Observable+Do';
  * emission.
  * @returns {MonoTypeOperatorFunction<T>} An MonoTypeOperatorFunction instance.
  */
-export function logNext<T, R>(transform: (value: T) => R): MonoTypeOperatorFunction<T> {
+export function logNext<T, R>(transform?: (value: T) => R): MonoTypeOperatorFunction<T> {
   return doOnNext((value) => {
     if (transform !== undefined && transform !== null) {
       console.log(transform(value));
@@ -30,7 +30,7 @@ export function logNext<T, R>(transform: (value: T) => R): MonoTypeOperatorFunct
  * emission.
  * @returns {MonoTypeOperatorFunction<T>} An MonoTypeOperatorFunction instance.
  */
-export function logNextPrefix<T, R>(prefix: string, transform: (v: T) => R): MonoTypeOperatorFunction<T> {
+export function logNextPrefix<T, R>(prefix: string, transform?: (v: T) => R): MonoTypeOperatorFunction<T> {
   return doOnNext(v => {
     if (transform !== undefined && transform !== null) {
       console.log(`${prefix}${transform(v)}`);
@@ -48,7 +48,7 @@ export function logNextPrefix<T, R>(prefix: string, transform: (v: T) => R): Mon
  * the error to another type. If this is omitted, simply log the error.
  * @returns {MonoTypeOperatorFunction<T>} An MonoTypeOperatorFunction instance.
  */
-export function logError<T, R>(transform: (error: Error) => R): MonoTypeOperatorFunction<T> {
+export function logError<T, R>(transform?: (error: Error) => R): MonoTypeOperatorFunction<T> {
   return doOnError((error) => {
     if (transform !== undefined && transform !== null) {
       console.log(transform(error));
@@ -67,7 +67,7 @@ export function logError<T, R>(transform: (error: Error) => R): MonoTypeOperator
  * the error to another type. If this is omitted, simply log the error.
  * @returns {MonoTypeOperatorFunction<T>} An MonoTypeOperatorFunction instance.
  */
-export function logErrorPrefix<T, R>(prefix: string, transform: (error: Error) => R): MonoTypeOperatorFunction<T> {
+export function logErrorPrefix<T, R>(prefix: string, transform?: (error: Error) => R): MonoTypeOperatorFunction<T> {
   return doOnError(e => {
     if (transform !== undefined && transform !== null) {
       console.log(`${prefix}${transform(e)}`);

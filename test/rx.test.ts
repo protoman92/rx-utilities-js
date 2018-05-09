@@ -27,6 +27,10 @@ describe('Do should be implemented correctly', () => {
     range(0, times)
       .pipe(
         utils.doOnNext(() => nextCount += 1),
+        utils.logNext(),
+        utils.logNext(v => v),
+        utils.logNextPrefix('Current value:'),
+        utils.logNextPrefix('Current value:', v => v),
         utils.doOnCompleted(() => {
           completedCount += 1;
 
@@ -49,6 +53,10 @@ describe('Do should be implemented correctly', () => {
       throwError(new Error(message))
         .pipe(
           utils.doOnNext(() => nextCount += 1),
+          utils.logError(e => e),
+          utils.logError(),
+          utils.logErrorPrefix('Current error:'),
+          utils.logErrorPrefix('Current error:', e => e),
           utils.doOnError((error: Error) => {
             errorCount += 1;
 
@@ -176,6 +184,7 @@ describe('MappableObserver should be implemented correctly', () => {
     let times = 10;
     let numberRange = Numbers.range(0, times);
     let elements: number[] = [];
+    let errors: Error[] = [];
 
     let observer = utils.MappableObserver.Self.of(subject)
       .mapObserver<string>(v => Number.parseInt(v))
@@ -185,22 +194,47 @@ describe('MappableObserver should be implemented correctly', () => {
     subject.asObservable()
       .pipe(
         utils.mapNonNilOrEmpty(v => v),
-        utils.doOnNext(v => elements.push(v)))
+        utils.doOnNext(v => elements.push(v)),
+        utils.doOnError(e => errors.push(e)))
       .subscribe();
 
-    /// When
+    /// When && Then
     for (let i of numberRange) {
       observer.next(i);
     }
 
-    /// Then
     expect(elements).toEqual(numberRange.map(v => v * 2));
+
+    for (let _ of numberRange) {
+      observer.error(new Error('Error!'));
+    }
+
+    expect(errors).toHaveLength(1);
   };
 
   it('Mappable observer wrapper - should work correctly', () => {
     testObserver(new BehaviorSubject<Nullable<number>>(undefined));
     testObserver(new ReplaySubject<Nullable<number>>());
     testObserver(new Subject<Nullable<number>>());
+  });
+
+  it('Mappable observer with error mapper - should work', () => {
+    /// Setup
+    let errors: Error[] = [];
+    let subject = new Subject();
+
+    let mappableObserver = utils.MappableObserver.Self.of(subject)
+      .mapObserver(() => { throw Error('error'); });
+
+    subject.pipe(utils.doOnError(e => errors.push(e))).subscribe();
+
+    /// When
+    mappableObserver.next(1);
+    mappableObserver.next(2);
+    mappableObserver.next(3);
+
+    /// Then
+    expect(errors).toHaveLength(1);
   });
 });
 
