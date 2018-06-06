@@ -23,7 +23,7 @@ export function ensureOrder<T>(fn: (current: T, previous: T) => boolean): MonoTy
         value: Try.success(v),
       }), { larger: true, value: Try.failure<T>('') }),
       filter(v => v.larger),
-      mapNonNilOrEmpty(v => v.value),
+      mapNonNilOrEmpty<ScannedValue, T>(v => v.value.value),
     );
   };
 }
