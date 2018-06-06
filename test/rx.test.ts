@@ -9,7 +9,7 @@ import {
   throwError,
 } from 'rxjs';
 
-import { flatMap, isEmpty } from 'rxjs/operators';
+import { flatMap, isEmpty, map, } from 'rxjs/operators';
 import * as utils from './../src';
 import { IncompletableSubject } from './../src';
 import { Collections, Nullable, Numbers } from 'javascriptutilities';
@@ -84,6 +84,7 @@ describe('Catch should be implemented correctly', () => {
     try {
       throwError(new Error(message))
         .pipe(
+          map(() => 0),
           utils.catchJustReturnValue(fallback),
           utils.doOnNext((value) => {
             nextCount += 1;
@@ -183,7 +184,7 @@ describe('MappableObserver should be implemented correctly', () => {
     /// Setup
     let times = 10;
     let numberRange = Numbers.range(0, times);
-    let elements: number[] = [];
+    let elements: Nullable<number>[] = [];
     let errors: Error[] = [];
 
     let observer = utils.MappableObserver.Self.of(subject)
@@ -194,6 +195,7 @@ describe('MappableObserver should be implemented correctly', () => {
     subject.asObservable()
       .pipe(
         utils.mapNonNilOrEmpty(v => v),
+        utils.emptyIfNil(),
         utils.doOnNext(v => elements.push(v)),
         utils.doOnError(e => errors.push(e)))
       .subscribe();

@@ -1,4 +1,4 @@
-import { Observable, OperatorFunction, empty, of } from 'rxjs';
+import { MonoTypeOperatorFunction, Observable, OperatorFunction, empty, of } from 'rxjs';
 import { flatMap, map } from 'rxjs/operators';
 import { Try, TryResult } from 'javascriptutilities';
 
@@ -33,6 +33,15 @@ export function mapNonNilOrEmpty<T, R>(selector: (v: T) => TryResult<R>): Operat
   return flatMapNonNilOrEmpty(v => {
     return Try.evaluate(() => selector(v)).map(v1 => of(v1));
   });
+}
+
+/**
+ * Ignore nil emissions.
+ * @template T Generics parameter.
+ * @returns {MonoTypeOperatorFunction<T>} A MonoTypeOperatorFunction instance.
+ */
+export function emptyIfNil<T>(): MonoTypeOperatorFunction<T> {
+  return mapNonNilOrEmpty(v => v);
 }
 
 /**
